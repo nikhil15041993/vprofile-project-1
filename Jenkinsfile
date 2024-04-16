@@ -26,7 +26,7 @@ pipeline {
         
         stage('BUILD'){
             steps {
-                sh 'mvn -s settings.xml  -DskipTests install'
+                sh 'mvn clean install -DskipTests'
             }
             post {
                 success {
@@ -36,12 +36,31 @@ pipeline {
             }
         }
 
-        // stage('unit test')
-        // {
-        //     steps{
-        //          sh 'mvn test'
-        //     }
-        // }
+        stage('unit test')
+        {
+            steps{
+                 sh 'mvn test'
+            }
+        }
+
+        stage('INTEGRATION test')
+        {
+            steps{
+                sh 'mvn verify -DskipUnitTests'
+            }
+
+        }
+        stage('CODE ANALYSIS WITH CHECKSTYLE')
+        {
+            steps{
+                sh 'mvn checkstyle:checkstyle'
+            }
+            post {
+                success {
+                    echo 'Generated Analysis Result'
+                }
+            }
+        }
 
 
     }
